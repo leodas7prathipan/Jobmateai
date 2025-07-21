@@ -1,0 +1,323 @@
+{
+  "name": "Jobmate.ai",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -736,
+        -1248
+      ],
+      "id": "c42c6739-ace3-4383-bbb5-10510bafcf90",
+      "name": "Telegram Trigger",
+      "webhookId": "4497acb1-6f30-42b6-975a-127aa4614c03",
+      "credentials": {
+        "telegramApi": {
+          "id": "Zbm4Ku27tn9UYjqV",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot7885281479:AAGIitXhaVtebvU90r3Hmn0unSdvzQYs3SY/getFile?file_id={{$json[\"file_id\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        -1056
+      ],
+      "id": "ecfdc4b1-30f4-4e8d-986c-2aa817b1149b",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/file/bot7885281479:AAGIitXhaVtebvU90r3Hmn0unSdvzQYs3SY/{{ $json[\"result\"][\"file_path\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        -992
+      ],
+      "id": "d3dcdabc-dc2c-4bd7-9320-bebc13321c57",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -768
+      ],
+      "id": "073057c1-fef8-44d1-a60d-631cd7a9e3f6",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "GPT-3.5-TURBO"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Extract the following details from this resume text:\n- Name\n- Email\n- Phone\n- Skills\n- Location\n- Role\n- Experience summary\n\nText:\n{{ $json[\"text\"] }}"
+            },
+            {}
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        -768,
+        -512
+      ],
+      "id": "444cf868-2ec0-454a-bc92-2e7a8160e29f",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "7RLmAk392U7JodoJ",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://jsearch.p.rapidapi.com/search?query={{$json[\"role\"]}}&location=Tamil%20Nadu&country=IN",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "91aedef75bmsh9879ea1c243dd5bp122161jsna2119f2e914b"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "jsearch.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -432,
+        -560
+      ],
+      "id": "4192128c-e7d6-4d47-acb7-9e0deed49802",
+      "name": "HTTP Request2",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobs = $input.all()[0]?.json?.data || [];\n\nreturn jobs.map(job => {\n  return {\n    json: {\n      title: job.job_title || \"No Title\",\n      company: job.employer_name || \"Unknown\",\n      location: job.job_country || \"Unknown\",\n      url: job.job_google_link || \"https://google.com\",\n      tags: job.job_employment_types || [],\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -368,
+        -368
+      ],
+      "id": "f11f103d-df85-4ed7-a7b4-42da64f511ad",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "chatId": "={{$json[\"message\"][\"chat\"][\"id\"]}}",
+        "text": "=🎯 *{{$json[\"title\"]}}*  \n🏢 {{$json[\"company\"]}}  \n🌍 {{$json[\"location\"]}}  \n🔗 [Apply Here]({{$json[\"url\"]}})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        -608
+      ],
+      "id": "a43451b6-ec46-40c0-aa57-04b4d01b16bb",
+      "name": "Send a text message",
+      "webhookId": "59a27006-b216-4925-8a9f-67ebb046b8a8",
+      "alwaysOutputData": false,
+      "executeOnce": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "Zbm4Ku27tn9UYjqV",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "79483449-1e35-49e3-9c24-df3d728e98d6",
+              "name": "file_id",
+              "value": "=chat_id →\n{{ $json[\"message\"][\"chat\"][\"id\"] }}\n{{ $json[\"message\"][\"document\"][\"file_id\"] }}\n",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -704,
+        -912
+      ],
+      "id": "27827bda-8164-4626-b404-5833f6dddecc",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "jsCode": "const skills = $input.all()[0]?.json?.skills?.map(s => s.toLowerCase()) || [];\nlet role = \"Fresher\"; // Default\n\nconst roleMap = {\n  \"ui\": \"UI UX Designer\",\n  \"ux\": \"UI UX Designer\",\n  \"figma\": \"UI UX Designer\",\n  \"photoshop\": \"Graphic Designer\",\n  \"html\": \"Frontend Developer\",\n  \"css\": \"Frontend Developer\",\n  \"javascript\": \"Frontend Developer\",\n  \"sql\": \"Data Analyst\",\n  \"python\": \"Data Analyst\",\n  \"excel\": \"Data Analyst\",\n  \"cloud\": \"Cloud Engineer\",\n  \"java\": \"Java Developer\"\n};\n\n// Match first skill found\nfor (const skill of skills) {\n  const match = Object.keys(roleMap).find(key => skill.includes(key));\n  if (match) {\n    role = roleMap[match];\n    break;\n  }\n}\n\nreturn [{ json: { role } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -592,
+        -720
+      ],
+      "id": "90e45327-93e4-48cc-a0ca-daa0ae602b25",
+      "name": "Code1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7e48aaed-49c8-4114-8c81-93ad42072d2e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "887d718f2173583ce49c2677efd20f32bf8b99ed5038a6f77ff61d046eb874ed"
+  },
+  "id": "yQ7n3XoVjutbmWos",
+  "tags": []
+}
