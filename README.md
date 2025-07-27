@@ -22,4 +22,4 @@ This project automates the process of collecting resumes via Telegram and sendin
 This is a personal automation project made for fresher job seekers.
 
 ## 📬 Contact
-Created by Jithin – [Behance](https://www.behance.net/)
+Created by Jithin – [Behance](https://www.behance.net/gallery/231239499/Job-Mate-AI-Smart-Resume-to-Job-Matching-Automation)
