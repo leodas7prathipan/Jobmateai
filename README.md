@@ -21,5 +21,12 @@ This project automates the process of collecting resumes via Telegram and sendin
 ## 🔒 Note
 This is a personal automation project made for fresher job seekers.
 
+## 🧠 Workflow
+1. User sends `/start` to the Telegram bot.
+2. Bot asks for user the to upload resume.
+3. n8n takes the input → sends it to Open AI for analysis.
+4. Open ai compares it with job descriptions in a job portals with help of api.
+5. The most relevant job is returned and sent back via Telegram.
+
 ## 📬 Contact
 Created by Jithin – [Behance](https://www.behance.net/gallery/231239499/Job-Mate-AI-Smart-Resume-to-Job-Matching-Automation)
